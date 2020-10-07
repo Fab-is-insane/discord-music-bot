@@ -20,7 +20,10 @@ bot.on('message', async message => {
     if(cmd === 'play') {
         if(message.member.voice.channel) {
             const connection = await message.member.voice.channel.join();
-            connection.play(ytdl(`${args[0]}`, {filter: 'audioonly'}));
+
+            const thisStream = ytdl(`${args[0]}`, { highWaterMark: 2 ** 25, filter: () => ["251"] });
+
+            connection.play(thisStream);
         } else {
             message.reply('You need to join a voice channel first!');
         }
