@@ -44,11 +44,13 @@ bot.on('message', async message => {
             dispatcher.on('finish', () => {
                 voiceChannel.leave();
                 dispatcher = null;
-                message.reply('ooo boi, that was fun!');
+                message.reply('ooo boi, that was fun!')
+                .catch(err => console.log(err));
             });
 
         } else {
-            message.reply('you need to join a voice channel first!');
+            message.reply('you need to join a voice channel first!')
+            .catch(err => console.log(err));
         }
     }
 
@@ -57,7 +59,8 @@ bot.on('message', async message => {
             dispatcher.pause();
         }
         else {
-            message.reply('sorry I cannot pause **silence**.');
+            message.reply('sorry I cannot pause **silence**.')
+            .catch(err => console.log(err));
         }
     }
 
@@ -66,7 +69,8 @@ bot.on('message', async message => {
             dispatcher.resume();
         }
         else {
-            message.reply('there is nothing to resume. Use `!play <link>` cmd to play some music.');
+            message.reply('there is nothing to resume. Use `!play <link>` cmd to play some music.')
+            .catch(err => console.log(err));
         }
     }
 
@@ -75,28 +79,40 @@ bot.on('message', async message => {
             const infoEmbed = new MessageEmbed()
             .setColor('#B266B2')
             .setTitle('Commands you can use: ')
-            .setDescription('```!help``` - Returns the list of available commands\n```!play <link>``` - Plays the audio of the provided YouTube link\n```!pause``` - Pauses the music\n```!resume``` - Resumes the music\n```!create``` - Creates a player account of the user\n```!status``` - Returns information about the user');
-            return message.channel.send(infoEmbed);
+            .setDescription('```!help``` - Returns the list of available commands\n```!play <link>``` - Plays the audio of the provided YouTube link\n```!pause``` - Pauses the music\n```!resume``` - Resumes the music\n```!create``` - Creates a profile for the user\n```!me``` - Returns information about the user');
+            message.channel.send(infoEmbed);
         }
         else {
-            return message.reply('I have no idea what that means.');
+            return message.reply('I have no idea what that means.')
+            .catch(err => console.log(err));
         }
     }
 
     if(cmd === 'create') {
-        message.reply('this feature is in production.');
-        return;
-        const newUser = new User({
-            username: message.author.username,
-            id: message.author.id,
-        });
-        newUser.save()
-        .catch(err => console.log(err));
+        User.findOne({id: message.author.id}, (err, doc) => {
+            if(err) {
+                console.log(err);
+            }
+            //  Create a new user doc if it does not exist
+            else if(!doc)
+            {
+                const newUser = new User({
+                    username: message.author.username,
+                    id: message.author.id,
+                });
+                newUser.save()
+                .catch(err => console.log(err));
+                message.reply('woohoo!🥳 use `!me` to check out your brand new shiny✨ profile.')
+                .catch(err => console.log(err));
+            }
+            else {
+                message.reply('you already have a profile, use `!me` to check it out.')
+                .catch(err => console.log(err));
+            }
+        })
     }
 
-    if(cmd === 'status') {
-        message.reply('this feature is in production.');
-        return;
+    if(cmd === 'me') {
         User.findOne({id: message.author.id}, (err, doc) => {
             if(err) {
                 console.log(err);
@@ -114,7 +130,12 @@ bot.on('message', async message => {
                 .setDescription(
                     `Username: ${doc.username}\nRank: ${doc.rank}\nBalance: ₹ ${doc.balance}\nStatus: ${prisonStatus}\nLevel: ${doc.level}\nTotal XP: ${doc.totalXp}`
                 );
-                message.channel.send(userEmbed);
+                message.channel.send(userEmbed)
+                .catch(err => console.log(err));
+            }
+            else {
+                message.reply('you have not created a profile yet. Use `!create` to make a profile.')
+                .catch(err => console.log(err));
             }
         });
     }
