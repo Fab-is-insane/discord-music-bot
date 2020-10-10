@@ -171,4 +171,111 @@ bot.on('message', async message => {
             }
         })
     }
+
+    if(cmd === 'rob') {
+        let victim = message.mentions.members.first();
+        if(victim) {
+            let userDoc = false;
+            User.findOne({id: victim.user.id}, (err, doc) => {
+                if(err) {
+                    console.log(err);
+                }
+                else if(doc) {
+                    userDoc = true;
+                }
+            });
+            if(victim.user === bot.user) {
+                message.reply('really 😒 ? You tryna rob me bicc? 😠')
+                .catch(err => console.log(err));
+            }
+            else if(victim.user.bot) {
+                message.reply('You cannot rob a bot dumbass, they got nothing to steal.')
+                .catch(err => console.log(err));
+            }
+            else if(!userDoc) {
+                message.reply('the user you are trying to rob has not created their profile, kindly rob someone else.')
+                .catch(err => console.log(err));
+            }
+            else if(victim.presence.status === 'online') {
+                User.findOne({id: message.author.id}, (err, doc) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                    else if(doc) {
+                        let prisonStartedOn = doc.prison.startedOn;
+                        let currentTimestamp = new Date().getTime();
+                        let oneHour = 3600000;
+                        let timePassed = currentTimestamp - prisonStartedOn;
+                        let timeLeft = new Date(oneHour - timePassed).toISOString().substr(11, 8);
+                        if(timePassed < oneHour) {
+                            message.reply(`you are in prison 👮‍♂️. Come back after \`${timeLeft}\` hours to rob someone.`)
+                            .catch(err => console.log(err));
+                        }
+                        else {
+                            doc.prison.inPrison = true;
+                            doc.prison.startedOn = new Date().getTime();
+                            doc.save()
+                            .catch(err => console.log(err));
+                            message.reply(`you got caught red-handed 🚨. You tried to rob @${victim.user.username} while they were online, what were you expecting?`);
+                        }
+                    }
+                    else {
+                        message.reply('you need to have a profile in order to rob someone. Use `!create` to make a profile.')
+                        .catch(err => console.log(err));
+                    }
+                });
+            }
+            else {
+                // if 1 then steal is success
+                if(Math.round(Math.random())) {
+                    let stolenAmount;
+                    User.findOne({id: message.author.id}, (err, doc) => {
+                        if(err) {
+                            console.log(err);
+                        }
+                        else if(doc) {
+                            stolenAmount = Math.round(Math.random() * 300);
+                            doc.wallet += stolenAmount;
+                            doc.save()
+                            .catch(err => console.log(err));
+                            message.reply(`you successfully stole ₹ ${stolenAmount} from ${victim}.`)
+                            .catch(err => console.log(err));
+                        }
+                    });
+
+                    User.findOne({id: victim.user.id}, (err, doc) => {
+                        if(err) {
+                            console.log(err);
+                        }
+                        else if(doc) {
+                            doc.wallet -= stolenAmount;
+                            doc.save()
+                            .catch(err => console.log(err));
+                        }
+                    });
+                }
+                else {
+                    let fineAmount = 50;
+                    User.findOne({id: message.author.id}, (err, doc) => {
+                        if(err) {
+                            console.log(err);
+                        }
+                        else if(doc) {
+                            doc.prison.inPrison = true;
+                            doc.prison.startedOn = new Date().getTime();
+                            doc.wallet -= fineAmount;
+                            doc.save()
+                            .catch(err => console.log(err));
+                            message.reply(`oopsy! you got caught red-handed 🚨. Police fined you ₹ ${fineAmount} and locked you in the prison.`)
+                            .catch(err => console.log(err));
+                        }
+                    });
+                }
+            }
+        }
+        else {
+            message.reply('please mention a valid user you want to rob after the cmd. Like this: `!rob @victim`')
+            .catch(err => console.log(err));
+        }
+    }
 });
