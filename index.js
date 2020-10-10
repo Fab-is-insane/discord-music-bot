@@ -79,7 +79,7 @@ bot.on('message', async message => {
             const infoEmbed = new MessageEmbed()
             .setColor('#B266B2')
             .setTitle('Commands you can use: ')
-            .setDescription('```!help``` - Returns the list of available commands\n```!play <link>``` - Plays the audio of the provided YouTube link\n```!pause``` - Pauses the music\n```!resume``` - Resumes the music\n```!create``` - Creates a profile for the user\n```!me``` - Returns information about the user');
+            .setDescription('```!help``` - Returns the list of available commands\n```!play <link>``` - Plays the audio of the provided YouTube link\n```!pause``` - Pauses the music\n```!resume``` - Resumes the music\n```!create``` - Creates a profile for the user\n```!me``` - Returns information about the user\n```!daily``` - Use this cmd to claim your daily reward');
             message.channel.send(infoEmbed);
         }
         else {
