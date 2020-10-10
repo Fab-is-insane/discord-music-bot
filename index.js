@@ -180,7 +180,7 @@ bot.on('message', async message => {
             else if(doc) {
                 let prisonStartedOn = doc.prison.startedOn;
                 let currentTimestamp = new Date().getTime();
-                let oneHour = 20000//3600000;
+                let oneHour = 3600000;
                 let timePassed = currentTimestamp - prisonStartedOn;
                 let timeLeft = new Date(oneHour - timePassed).toISOString().substr(11, 8);
                 if(timePassed < oneHour) {
@@ -212,7 +212,7 @@ bot.on('message', async message => {
                                 doc.prison.startedOn = new Date().getTime();
                                 doc.save()
                                 .catch(err => console.log(err));
-                                return message.reply(`you got caught red-handed 🚨. You tried to rob ${victim.user} while they were online, what were you expecting?`);
+                                return message.reply(`you got caught red-handed 🚨. You tried to rob ${victim.user} while they were online, what were you expecting? Have a good time in prison dumbass.`);
                             }
                         });
                     }
