@@ -102,7 +102,7 @@ bot.on('message', async message => {
                 });
                 newUser.save()
                 .catch(err => console.log(err));
-                message.reply('woohoo!🥳 use `!me` to check out your brand new shiny✨ profile.')
+                message.reply('woohoo! 🥳 use `!me` to check out your brand new shiny✨ profile.')
                 .catch(err => console.log(err));
             }
             else {
@@ -128,7 +128,7 @@ bot.on('message', async message => {
                 const userEmbed = new MessageEmbed()
                 .setColor('#B266B2')
                 .setDescription(
-                    `Username: ${doc.username}\nRank: ${doc.rank}\nBalance: ₹ ${doc.balance}\nStatus: ${prisonStatus}\nLevel: ${doc.level}\nTotal XP: ${doc.totalXp}`
+                    `Username: ${doc.username}\nRank: ${doc.rank}\nWallet: ₹ ${doc.wallet}\nStatus: ${prisonStatus}\nLevel: ${doc.level}\nTotal XP: ${doc.totalXp}`
                 );
                 message.channel.send(userEmbed)
                 .catch(err => console.log(err));
@@ -138,5 +138,37 @@ bot.on('message', async message => {
                 .catch(err => console.log(err));
             }
         });
+    }
+
+    if(cmd === 'daily') {
+        User.findOne({id: message.author.id}, (err, doc) => {
+            if(err) {
+                console.log(err);
+            }
+            else if(doc) {
+                let lastClaimTimestamp = doc.dailyClaimTimestamp;
+                let currentTimestamp = new Date().getTime();
+                let timePassed = currentTimestamp-lastClaimTimestamp;
+                let oneDay = 86400000;
+                let timeLeft = oneDay - timePassed;
+                if(timeLeft <= 0) {
+                    doc.wallet += 100;
+                    doc.dailyClaimTimestamp = new Date().getTime();
+                    doc.save()
+                    .catch(err => console.log(err));
+                    message.reply('I just sent 100 rupees to your wallet as a daily gift. Use `!me` to check out how rich you are.')
+                    .catch(err => console.log(err));
+                }
+                else {
+                    let time = new Date(timeLeft).toISOString().substr(11, 8);
+                    message.reply(`do you want me to go bankrupt? 😥 Please come back after \`${time}\` hours to claim your daily reward.`)
+                    .catch(err => console.log(err));
+                }
+            }
+            else {
+                message.reply('you need to have a profile to claim daily rewards. Use `!create` cmd to make a profile.')
+                .catch(err => console.log(err));
+            }
+        })
     }
 });
