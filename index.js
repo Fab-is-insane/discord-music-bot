@@ -175,25 +175,12 @@ bot.on('message', async message => {
     if(cmd === 'rob') {
         let victim = message.mentions.members.first();
         if(victim) {
-            let userDoc = false;
-            User.findOne({id: victim.user.id}, (err, doc) => {
-                if(err) {
-                    console.log(err);
-                }
-                else if(doc) {
-                    userDoc = true;
-                }
-            });
             if(victim.user === bot.user) {
                 message.reply('really 😒 ? You tryna rob me bicc? 😠')
                 .catch(err => console.log(err));
             }
             else if(victim.user.bot) {
                 message.reply('You cannot rob a bot dumbass, they got nothing to steal.')
-                .catch(err => console.log(err));
-            }
-            else if(!userDoc) {
-                message.reply('the user you are trying to rob has not created their profile, kindly rob someone else.')
                 .catch(err => console.log(err));
             }
             else if(victim.presence.status === 'online') {
@@ -229,6 +216,21 @@ bot.on('message', async message => {
                 // if 1 then steal is success
                 if(Math.round(Math.random())) {
                     let stolenAmount;
+                    User.findOne({id: victim.user.id}, (err, doc) => {
+                        if(err) {
+                            console.log(err);
+                        }
+                        else if(doc) {
+                            doc.wallet -= stolenAmount;
+                            doc.save()
+                            .catch(err => console.log(err));
+                        }
+                        else {
+                            message.reply('the user you are trying to rob has not created their profile, kindly rob someone else.')
+                            .catch(err => console.log(err));
+                            return;
+                        }
+                    });
                     User.findOne({id: message.author.id}, (err, doc) => {
                         if(err) {
                             console.log(err);
@@ -239,17 +241,6 @@ bot.on('message', async message => {
                             doc.save()
                             .catch(err => console.log(err));
                             message.reply(`you successfully stole ₹ ${stolenAmount} from ${victim}.`)
-                            .catch(err => console.log(err));
-                        }
-                    });
-
-                    User.findOne({id: victim.user.id}, (err, doc) => {
-                        if(err) {
-                            console.log(err);
-                        }
-                        else if(doc) {
-                            doc.wallet -= stolenAmount;
-                            doc.save()
                             .catch(err => console.log(err));
                         }
                     });
