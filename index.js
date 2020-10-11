@@ -4,7 +4,6 @@ const ytdl = require('ytdl-core');
 const User = require('./schemas/user');
 const fetch = require('node-fetch');
 
-
 const databaseURI = 'mongodb+srv://bot:tiDBpass@123@database-cluster.lkrli.mongodb.net/discord_bot_database?retryWrites=true&w=majority';
 
 mongoose.connect(databaseURI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -23,7 +22,8 @@ bot.on('ready', () => {
 });
 
 bot.on('message', async message => {
-    if(!message.guild || !message.content.startsWith(prefix) || message.author.bot) return;
+    if(!message.guild || message.author.bot) return;
+    // if(!message.guild || !message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).split(/ +/);
     const cmd = args.shift();
@@ -287,4 +287,19 @@ bot.on('message', async message => {
             }
         });
     }
+
+    if(message.channel.id === '764843057967267840') {
+        fetch(`https://some-random-api.ml/chatbot?message=${message.content}`)
+        .then(res => res.json())
+        .then(data => message.channel.send(data.response));
+    }
+
+    // if(cmd === 'trigger') {
+    //     let mUser = message.mentions.members.first();
+    //     let mUserAvatar = mUser.user.avatarURL({ format: 'png' });
+    //     const res = await fetch(`https://some-random-api.ml/canvas/triggered?avatar=${mUserAvatar}`);
+    //     const triggerEmbed = new MessageEmbed()
+    //     .set(res.url);
+    //     return message.channel.send(triggerEmbed);
+    // }
 });
