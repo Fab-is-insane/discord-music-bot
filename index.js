@@ -2,6 +2,7 @@ const { Client, MessageEmbed } = require('discord.js');
 const mongoose = require('mongoose');
 const ytdl = require('ytdl-core');
 const User = require('./schemas/user');
+const fetch = require('node-fetch');
 
 
 const databaseURI = 'mongodb+srv://bot:tiDBpass@123@database-cluster.lkrli.mongodb.net/discord_bot_database?retryWrites=true&w=majority';
@@ -79,7 +80,7 @@ bot.on('message', async message => {
             const infoEmbed = new MessageEmbed()
             .setColor('#B266B2')
             .setTitle('Commands you can use: ')
-            .setDescription('```!help``` - Returns the list of available commands\n```!play <link>``` - Plays the audio of the provided YouTube link\n```!pause``` - Pauses the music\n```!resume``` - Resumes the music\n```!create``` - Creates a profile for the user\n```!me``` - Returns information about the user\n```!daily``` - Use this cmd to claim your daily reward');
+            .setDescription('```!help``` - Returns the list of available commands\n```!play <link>``` - Plays the audio of the provided YouTube link\n```!pause``` - Pauses the music\n```!resume``` - Resumes the music\n```!create``` - Creates a profile for the user\n```!me``` - Returns information about the user\n```!daily``` - Use this cmd to claim your daily reward\n```!rob @victim``` - Rob a user to get some easy monieeee\n```!meme``` - Blow air from your nostrils with your friends');
             message.channel.send(infoEmbed);
         }
         else {
@@ -272,5 +273,18 @@ bot.on('message', async message => {
                 .catch(err => console.log(err));
             }
         });    
+    }
+
+    if (cmd === 'meme') {
+        fetch(`https://some-random-api.ml/meme`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.image != null) {
+                const memeEmbed = new MessageEmbed()
+                .setColor('#BF91FF')
+                .setImage(data.image);
+                return message.channel.send(memeEmbed);
+            }
+        });
     }
 });
