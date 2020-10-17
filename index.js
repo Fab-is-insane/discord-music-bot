@@ -1,4 +1,4 @@
-const { Client, MessageEmbed } = require('discord.js');
+const { Client, MessageEmbed, MessageAttachment } = require('discord.js');
 const mongoose = require('mongoose');
 const ytdl = require('ytdl-core');
 const User = require('./schemas/user');
@@ -20,6 +20,7 @@ let dispatcher = null;
 bot.on('ready', () => {
     console.log('Bot is online');
 });
+
 
 bot.on('message', async message => {
     if(!message.guild || message.author.bot) return;
@@ -296,10 +297,29 @@ bot.on('message', async message => {
 
     // if(cmd === 'trigger') {
     //     let mUser = message.mentions.members.first();
+    //     mUser.se
     //     let mUserAvatar = mUser.user.avatarURL({ format: 'png' });
     //     const res = await fetch(`https://some-random-api.ml/canvas/triggered?avatar=${mUserAvatar}`);
     //     const triggerEmbed = new MessageEmbed()
-    //     .set(res.url);
+    //     .setThumbnail(res.url);
     //     return message.channel.send(triggerEmbed);
     // }
+
+    if(cmd === 'fakeTube') {
+        let member = message.mentions.members.first();
+        let userAvatar = member.user.avatarURL({ format: 'png' });
+        let userName = member.user.username;
+        let commentArr = args;
+        let commentArr = commentArr.shift();
+        let fakeComment = commentArr.join(" ");
+        
+        const fakeCommentImage = await fetch(`https://some-random-api.ml/canvas/youtube-comment?avatar=${userAvatar}&&comment=${fakeComment}&&username=${userName}`);
+
+        const attachment = new MessageAttachment(fakeCommentImage.url, 'image.png');
+
+        const embed = new MessageEmbed()
+        .attachFiles(attachment)
+        .setImage('attachment://image.png');
+        message.channel.send(embed);
+    }
 });
