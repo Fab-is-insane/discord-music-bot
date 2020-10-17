@@ -309,9 +309,8 @@ bot.on('message', async message => {
         let member = message.mentions.members.first();
         let userAvatar = member.user.avatarURL({ format: 'png' });
         let userName = member.user.username;
-        let commentArr = args;
-        commentArr = commentArr.shift();
-        let fakeComment = commentArr.join(" ");
+        args.shift();
+        let fakeComment = args.join(" ");
         
         const fakeCommentImage = await fetch(`https://some-random-api.ml/canvas/youtube-comment?avatar=${userAvatar}&&comment=${fakeComment}&&username=${userName}`);
 
